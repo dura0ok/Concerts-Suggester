@@ -2,6 +2,7 @@
 
 ```Bash
 python3 -m venv .venv
+```
 
 ```Bash
 source .venv/bin/activate
