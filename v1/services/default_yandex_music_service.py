@@ -20,6 +20,7 @@ class DefaultYandexMusicService(AbstractYandexMusicService):
         self.__client = yandex_music.ClientAsync()
 
     async def parse_artist_concerts(self, artist_id: str) -> List[Concert]:
+        # TODO: add validation
         brief_info: Optional[yandex_music.BriefInfo] = await self.__client.artists_brief_info(artist_id=artist_id)
 
         if brief_info is None:
@@ -29,7 +30,7 @@ class DefaultYandexMusicService(AbstractYandexMusicService):
         concerts: list[dict] = brief_info.concerts
 
         for c in concerts:
-            images: Optional[list[str]] = c.get('image')
+            images: Optional[list[str]] = c.get('images')
             min_price_dict: Optional[dict] = c.get('min_price')
 
             result.append(Concert(
