@@ -12,3 +12,20 @@ services:
       - "27017:27017"
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123321}
+      PROJECT_USER_NAME: ${PROJECT_USER_NAME:-durachok}
+      PROJECT_USER_PASSWORD: ${PROJECT_USER_PASSWORD:-123321}
+      PROJECT_USER_DATABASE_NAME: ${PROJECT_USER_DATABASE_NAME:-concert-suggester}
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
