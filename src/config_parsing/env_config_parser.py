@@ -10,10 +10,12 @@ class EnvConfigParser(ConfigParser):
     __host_key_name: str = 'HOST'
     __port_key_name: str = 'PORT'
 
-    __default_host: str = '127.0.0.1'
-    __default_port: int = 8000
+    __default_host: str
+    __default_port: int
 
-    def __init__(self) -> None:
+    def __init__(self, default_host: str = '127.0.0.1', default_port: int = 8000) -> None:
+        self.__default_host = default_host
+        self.__default_port = default_port
         load_dotenv()
 
     def parse_host(self) -> str:

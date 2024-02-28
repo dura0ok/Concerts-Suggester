@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Artist:
+class ArtistDTO:
     name: str
     yandex_music_id: int

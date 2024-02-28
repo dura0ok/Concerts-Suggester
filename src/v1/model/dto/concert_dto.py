@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Concert:
+class ConcertDTO:
     title: str
     afisha_url: str
     city: str
