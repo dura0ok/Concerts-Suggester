@@ -5,16 +5,18 @@ CREATE TABLE users (
 );
 
 CREATE TABLE processed_concert_links (
-    concert_link VARCHAR(255) NOT NULL
+    concert_link VARCHAR(255) NOT NULL,
+    PRIMARY KEY (concert_link)
 );
 
 CREATE TABLE users_playlists (
     user_id INTEGER REFERENCES users(id) NOT NULL,
-    playlist_link VARCHAR(255) NOT NULL
+    playlist_link VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id, playlist_link)
 );
 
-CREATE TABLE user_cities (
+CREATE TABLE users_cities (
     user_id INTEGER REFERENCES users(id) NOT NULL,
-    city_name VARCHAR(255) NOT NULL
-    PRIMARY KEY (user_id, city_name);
+    city_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id, city_name)
 );
