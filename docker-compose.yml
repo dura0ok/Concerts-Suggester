@@ -24,6 +24,16 @@ services:
       - "0.0.0.0:5432:5432"
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    command: >
+          --requirepass ${REDIS_PASSWORD:-123321}
+
 
   adminer:
     image: adminer
