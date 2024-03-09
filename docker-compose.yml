@@ -26,6 +26,8 @@ services:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./postgres-data:/var/lib/postgresql/data
+    env_file:
+      - .env
 
   redis:
     image: redis
@@ -33,11 +35,15 @@ services:
       - "6379:6379"
     command: >
       --requirepass ${REDIS_PASSWORD:-123321}
+    env_file:
+      - .env
 
   adminer:
     image: adminer
     ports:
       - "8080:8080"
+    env_file:
+      - .env
 
 
   elasticsearch:
@@ -50,6 +56,8 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - "xpack.security.enabled=true"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-123321}"
+      - "ELASTIC_USER=${ELASTIC_USER:-elastic}"
+
     ulimits:
       memlock:
         soft: -1
@@ -65,3 +73,23 @@ services:
         max-file: "100"
     ports:
       - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -X GET 'localhost:9200/_cat/health?v' --user elastic:123321 | grep -q 'green'"]
+      interval: 1s
+      timeout: 15s
+      retries: 100
+    env_file:
+      - .env
+
+
+  indexer:
+    volumes:
+      - ./indexer:/app/indexer
+    build:
+      context: indexer/
+
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    env_file:
+      - .env
