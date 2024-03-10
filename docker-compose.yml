@@ -76,11 +76,10 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f -X GET 'localhost:9200/_cat/health?v' --user elastic:123321 | grep -q 'green'"]
       interval: 1s
-      timeout: 15s
-      retries: 100
+      timeout: 20s
+      retries: 200
     env_file:
       - .env
-
 
   indexer:
     volumes:
@@ -93,3 +92,14 @@ services:
         condition: service_healthy
     env_file:
       - .env
+
+  # kibana:
+  #   image: kibana:8.12.2
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #     - ELASTICSEARCH_SERVICEACCOUNTTOKEN=MY_TOKEN
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy
