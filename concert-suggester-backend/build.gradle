@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'application'
 }
 
 group = 'ru.nsu.pipichinka'
@@ -17,6 +18,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web' 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -24,12 +26,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-jar {
+bootJar {
+    mainClassName = 'ru.nsu.pipichinka.concertsuggesterbackend.ConcertSuggesterBackendApplication'
     archiveFileName.set('app.jar')
-    
-    manifest {
-        attributes(
-            'Main-Class': 'ru.nsu.pipichinka.concertsuggesterbackend.ConcertSuggesterBackendApplication'
-        )
-    }
 }

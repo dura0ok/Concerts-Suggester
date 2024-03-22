@@ -28,6 +28,13 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     env_file:
       - .env
+  
+  concert-suggester-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
 
   redis:
     image: redis
@@ -41,7 +48,7 @@ services:
   adminer:
     image: adminer
     ports:
-      - "8080:8080"
+      - "9090:8080"
     env_file:
       - .env
 
