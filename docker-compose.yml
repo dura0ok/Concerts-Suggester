@@ -12,3 +12,101 @@ services:
       - "27017:27017"
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123321}
+      PROJECT_USER_NAME: ${PROJECT_USER_NAME:-durachok}
+      PROJECT_USER_PASSWORD: ${PROJECT_USER_PASSWORD:-123321}
+      PROJECT_USER_DATABASE_NAME: ${PROJECT_USER_DATABASE_NAME:-concert-suggester}
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+  
+  concert-suggester-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    command: >
+      --requirepass ${REDIS_PASSWORD:-123321}
+    env_file:
+      - .env
+
+  adminer:
+    image: adminer
+    ports:
+      - "9090:8080"
+    env_file:
+      - .env
+
+
+  elasticsearch:
+    image: elasticsearch:8.12.2
+    environment:
+      - discovery.type=single-node
+      - cluster.name=es-cluster-1
+      - node.name=es-node-1-1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "xpack.security.enabled=true"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-123321}"
+      - "ELASTIC_USER=${ELASTIC_USER:-elastic}"
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "100"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -X GET 'localhost:9200/_cat/health?v' --user elastic:123321 | grep -q 'green'"]
+      interval: 1s
+      timeout: 20s
+      retries: 200
+    env_file:
+      - .env
+
+  indexer:
+    volumes:
+      - ./indexer:/app/indexer
+    build:
+      context: indexer/
+
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    env_file:
+      - .env
+
+  # kibana:
+  #   image: kibana:8.12.2
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #     - ELASTICSEARCH_SERVICEACCOUNTTOKEN=MY_TOKEN
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy

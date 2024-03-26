@@ -33,60 +33,30 @@ userDB.createUser({
 });
 
 
-userDB.createCollection('users', {
+userDB.createCollection('logs', {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["username", "telegram_id", "city_list", "favorite_artists"],
+      required: ["logType", "timestamp", "message", "serviceType"],
       properties: {
-        username: {
+        logType: {
           bsonType: "string",
-          description: "Имя пользователя"
+          description: "Тип лога"
         },
-        telegram_id: {
-          bsonType: "string",
-          description: "ID в Телеграме"
-        },
-        city_list: {
-          bsonType: "array",
-          description: "Список городов"
-        },
-        yandex_playlist_id: {
-          bsonType: "string",
-          description: "ID плейлиста в Яндексе"
-        },
-        favorite_artists: {
-          bsonType: "array",
-          description: "Список любимых исполнителей"
-        }
-      }
-    }
-  }
-});
-
-// Создание коллекции "concerts"
-userDB.createCollection('concerts', {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["artist", "date", "city", "link"],
-      properties: {
-        artist: {
-          bsonType: "string",
-          description: "Исполнитель концерта"
-        },
-        date: {
+        timestamp: {
           bsonType: "date",
-          description: "Дата и время концерта"
+          description: "Временная метка лога"
         },
-        city: {
+        message: {
           bsonType: "string",
-          description: "Город концерта"
+          description: "Сообщение лога"
         },
-        link: {
+        serviceType: {
           bsonType: "string",
-          description: "Ссылка на концерт"
+          enum: ["bot", "backend", "yandex-music-service", "parser-service"],
+          description: "Тип сервиса (enum)"
         }
+       
       }
     }
   }
